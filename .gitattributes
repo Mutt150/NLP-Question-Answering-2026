@@ -1,0 +1,4 @@
+# Pertahankan byte teks sumber dan CSV pada checkout Windows maupun Linux.
+data/*.csv -text whitespace=trailing-space,space-before-tab,cr-at-eol
+data/corpus/*.txt -text
+data/processed/*.csv -text whitespace=trailing-space,space-before-tab,cr-at-eol

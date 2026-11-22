@@ -1,0 +1,9 @@
+.venv/
+.hf-cache/
+/archive/
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.env
+data/processed/cek-pilot/
+data/processed/eksplorasi-ulang.json

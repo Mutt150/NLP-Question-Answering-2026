@@ -1,0 +1,2 @@
+# Penyiapan data, kerangka QA, dan tes cukup pakai pustaka bawaan Python.
+# Tambahkan paket beserta versi yang sudah dicoba saat modul QA mulai memakainya.

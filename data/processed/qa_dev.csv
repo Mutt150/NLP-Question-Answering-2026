@@ -1,0 +1,11 @@
+question_id,question,answer_type,ground_truth,evidence_doc_id,evidence_paragraph,evidence_text,evidence_passage_id
+DEV001,Kapan Ki Hadjar Dewantara mendirikan Perguruan Nasional Taman Siswa di Yogyakarta?,DATE,3 Juli 1922,DOC001,4,"Pada 3 Juli 1922, ia akhirnya mendirikan Perguruan Nasional Taman Siswa di Yogyakarta.",DOC001_P04
+DEV002,Sampai usia berapa Kartini diperbolehkan bersekolah di ELS?,NUMBER,12 tahun,DOC002,2,"Sampai usia 12 tahun, Kartini diperbolehkan bersekolah di Europeesche Lagere School (ELS).",DOC002_P02
+DEV003,"Di mana Cut Nyak Dhien dilahirkan di wilayah VI Mukim, Aceh Besar?",LOCATION,Lampadang,DOC003,4,"Cut Nyak Dhien dilahirkan di Lampadang, wilayah VI Mukim, Aceh Besar.",DOC003_P04
+DEV004,Organisasi apa yang dipimpin Mohammad Hatta pada 1926 ketika ia bersekolah di Belanda?,ORGANIZATION,Perhimpunan Indonesia,DOC004,4,"Pada tahun 1926, ia menjadi pimpinan Perhimpunan Indonesia.",DOC004_P04
+DEV005,Siapa yang bersama Soekarno memproklamasikan kemerdekaan Indonesia?,PERSON,Mohammad Hatta,DOC005,1,"Ia menjabat sebagai presiden setelah memproklamasikan kemerdekaan Indonesia bersama wakilnya, Mohammad Hatta.",DOC005_P01
+DEV006,Di kampung mana di Surabaya Bung Tomo dilahirkan?,LOCATION,Kampung Blauran,DOC007,2,"Sutomo dilahirkan di Kampung Blauran, Surabaya.",DOC007_P02
+DEV007,Kapan Dewi Sartika mendirikan Sakola Istri di Pendopo Kabupaten Bandung?,DATE,16 Januari 1904,DOC009,3,"Pada 16 Januari 1904, ia mendirikan Sakola Istri di Pendopo Kabupaten Bandung, berkat dukungan dari kakeknya yang pada saat itu menjabat sebagai Bupati Bandung, Raden Adipati Aria Martanagara, dan Den Hamer, Inspektur Kantor Pengajaran.",DOC009_P03
+DEV008,Apa jabatan Agus Salim ketika ia mulai bekerja di Harian Neratja pada 1915?,FACT,Wakil Redaktur,DOC010,4,Kemudian pada tahun 1915 ia terjun ke dunia jurnalistik di Harian Neratja sebagai Wakil Redaktur.,DOC010_P04
+DEV009,Partai apa yang didirikan Sutan Sjahrir pada 1948?,ORGANIZATION,Partai Sosialis Indonesia,DOC011,2,Sjahrir mendirikan Partai Sosialis Indonesia pada tahun 1948.,DOC011_P02
+DEV010,Siapa ayah Martha Christina Tiahahu?,PERSON,Kapitan Paulus Tiahahu,DOC015,2,"Ia adalah putri dari Kapitan Paulus Tiahahu, seorang pemimpin dari Soa Uluputi.",DOC015_P02
