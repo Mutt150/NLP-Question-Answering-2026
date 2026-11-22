@@ -59,7 +59,3 @@ paragraf = teks.strip().split("\n\n")
 bukti = paragraf[int(soal.evidence_paragraph) - 1]
 assert soal.evidence_text in bukti
 ```
-
-Untuk QA klasik, indekskan paragraf dengan TF-IDF dan simpan teks aslinya untuk POS, NER, regex, dan ekstraksi jawaban. Untuk RAG, gunakan paragraf yang sama sebagai unit pencarian semantik. Kedua sistem dapat mengembalikan `doc_id` dan nomor paragraf, lalu memperoleh URL dari metadata.
-
-Korpus hanya mencakup bagian terpilih dari satu artikel per tokoh. Gunakan soal DEV untuk pengembangan. Saat menyusun soal final, hindari fakta yang diperdebatkan dan periksa kemungkinan adanya lebih dari satu paragraf pendukung.
