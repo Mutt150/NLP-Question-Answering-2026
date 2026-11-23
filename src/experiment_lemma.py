@@ -2,7 +2,7 @@
 
 import json
 
-from .experiment_qp_tfidf import CONFIGS, RETRIEVAL_LIMITATIONS, load_dev, rank_of, rank_passages
+from .experiment_qp_tfidf import CONFIGS, RETRIEVAL_LIMITATIONS, load_dev, rank_of, rank_passages, summarize
 from .prepare_data import DATA_DIR, load_corpus
 from .question_processing import QUESTION_WORDS, STOPWORDS, tokenize
 from .retrieve_tfidf import _stem
@@ -49,14 +49,13 @@ LEMMA_CONFIGS = {
 
 def retrieval_report(dev: list[dict[str, str]]) -> None:
     print(f"== Retrieval TF-IDF (DEV, {len(dev)} soal) ==")
-    print(f"{'konfigurasi':<16}{'Hit@1':>8}{'Hit@3':>8}   peringkat per soal")
+    print(f"{'konfigurasi':<16}{'Hit@1':>8}{'Hit@3':>8}{'MRR':>7}   peringkat per soal")
     questions = [r["question"] for r in dev]
     for name, config in LEMMA_CONFIGS.items():
         ranks = [rank_of(ranking, r["evidence_passage_id"]) for ranking, r in zip(rank_passages(config, questions), dev)]
-        hit1 = sum(rank == 1 for rank in ranks)
-        hit3 = sum(rank is not None and rank <= 3 for rank in ranks)
+        hit1, hit3, mrr = summarize(ranks)
         shown = " ".join("-" if rank is None else str(rank) for rank in ranks)
-        print(f"{name:<16}{hit1:>5}/{len(dev)}{hit3:>5}/{len(dev)}   {shown}")
+        print(f"{name:<16}{hit1:>5}/{len(dev)}{hit3:>5}/{len(dev)}{mrr:>7.3f}   {shown}")
     print()
 
 
