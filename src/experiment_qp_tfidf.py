@@ -7,9 +7,10 @@ from sklearn.metrics.pairwise import cosine_similarity
 
 from .prepare_data import DATA_DIR, load_corpus
 from .question_processing import detect_answer_type
-from .retrieve_tfidf import _index_tokens, retrieve_tfidf
+from .retrieve_tfidf import _index_tokens, _stem_tokens, retrieve_tfidf
 
 RESULTS_PATH = DATA_DIR.parent / "results" / "retrieval_dev.csv"
+SYSTEM_CONFIG = "unigram+stem"
 
 
 def _clean(text: str) -> str:
@@ -20,6 +21,7 @@ def _clean(text: str) -> str:
 CONFIGS = {
     "unigram": dict(tokenizer=_index_tokens, lowercase=False, token_pattern=None, ngram_range=(1, 1)),
     "unigram+bigram": dict(tokenizer=_index_tokens, lowercase=False, token_pattern=None, ngram_range=(1, 2)),
+    "unigram+stem": dict(tokenizer=_stem_tokens, lowercase=False, token_pattern=None, ngram_range=(1, 1)),
     "char 3-5": dict(preprocessor=_clean, lowercase=False, analyzer="char_wb", ngram_range=(3, 5)),
 }
 
@@ -87,7 +89,7 @@ def retrieval_report(dev: list[dict[str, str]]) -> None:
                 "hit3": int(rank is not None and rank <= 3),
                 "top3": "|".join(pid for pid, score in ranking[:3] if score > 0),
             })
-        if name == "unigram":
+        if name == SYSTEM_CONFIG:
             _check_same_as_system(rankings, questions)
     print()
     RESULTS_PATH.parent.mkdir(exist_ok=True)
@@ -103,7 +105,7 @@ def _check_same_as_system(rankings, questions) -> None:
     for ranking, question in zip(rankings, questions):
         expected = [p["passage_id"] for p in retrieve_tfidf(question, k=3)]
         if [pid for pid, score in ranking[:3] if score > 0] != expected:
-            raise RuntimeError(f"Konfigurasi unigram berbeda dengan retrieve_tfidf pada: {question}")
+            raise RuntimeError(f"Konfigurasi {SYSTEM_CONFIG} berbeda dengan retrieve_tfidf pada: {question}")
 
 
 def limitation_report() -> None:
