@@ -63,6 +63,11 @@ class StemCacheTests(unittest.TestCase):
 
 class KnownLimitationTests(unittest.TestCase):
     @unittest.expectedFailure
+    def test_paragraf_dalam_biografi_bersaing(self):
+        # nama tokoh ada di hampir semua paragraf, pembedanya hanya "istri" vs "menikah"
+        self.assertIn("DOC004_P02", passage_ids("Siapa istri Mohammad Hatta?"))
+
+    @unittest.expectedFailure
     def test_parafrase_nama(self):
         # passage menulis "Sutomo", pertanyaan memakai "Bung Tomo"
         self.assertIn("DOC007_P02", passage_ids("Tempat kelahiran Bung Tomo di Surabaya?"))
