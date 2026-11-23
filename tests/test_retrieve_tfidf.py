@@ -48,7 +48,7 @@ class RetrievalQualityTests(unittest.TestCase):
     def test_hit_at_3_dev(self):
         rows = load_dev()
         hits = sum(row["evidence_passage_id"] in passage_ids(row["question"]) for row in rows)
-        self.assertGreaterEqual(hits, 9, f"Hit@3 DEV hanya {hits}/{len(rows)}")
+        self.assertGreaterEqual(hits, 19, f"Hit@3 DEV hanya {hits}/{len(rows)}")
 
     def test_kata_sama_dengan_passage(self):
         self.assertEqual(passage_ids("Di kampung mana Bung Tomo dilahirkan?")[0], "DOC007_P02")
