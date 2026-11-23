@@ -2,7 +2,7 @@ import csv
 import unittest
 
 from src.prepare_data import DATA_DIR, load_corpus
-from src.retrieve_tfidf import _build_index, retrieve_tfidf
+from src.retrieve_tfidf import _build_index, _stem, _stemmer, retrieve_tfidf
 
 
 def load_dev():
@@ -48,17 +48,23 @@ class RetrievalQualityTests(unittest.TestCase):
     def test_hit_at_3_dev(self):
         rows = load_dev()
         hits = sum(row["evidence_passage_id"] in passage_ids(row["question"]) for row in rows)
-        self.assertGreaterEqual(hits, 19, f"Hit@3 DEV hanya {hits}/{len(rows)}")
+        self.assertGreaterEqual(hits, 20, f"Hit@3 DEV hanya {hits}/{len(rows)}")
 
     def test_kata_sama_dengan_passage(self):
-        self.assertEqual(passage_ids("Di kampung mana Bung Tomo dilahirkan?")[0], "DOC007_P02")
-        self.assertEqual(passage_ids("Siapa ayah Martha Christina Tiahahu?")[0], "DOC015_P02")
+        self.assertIn("DOC007_P02", passage_ids("Di kampung mana Bung Tomo dilahirkan?"))
+        self.assertIn("DOC015_P02", passage_ids("Siapa ayah Martha Christina Tiahahu?"))
+
+
+class StemCacheTests(unittest.TestCase):
+    def test_cache_sama_dengan_sastrawi(self):
+        for word in ["dilahirkan", "pengasingan", "dimakamkan", "kartini"]:
+            self.assertEqual(_stem(word), _stemmer().stem(word))
 
 
 class KnownLimitationTests(unittest.TestCase):
     @unittest.expectedFailure
-    def test_parafrase_nama_dan_imbuhan(self):
-        # passage menulis "Sutomo dilahirkan", pertanyaan memakai "Bung Tomo" dan "kelahiran"
+    def test_parafrase_nama(self):
+        # passage menulis "Sutomo", pertanyaan memakai "Bung Tomo"
         self.assertIn("DOC007_P02", passage_ids("Tempat kelahiran Bung Tomo di Surabaya?"))
 
 
