@@ -1,0 +1,4 @@
+config,questions,hit1,hit3,mrr
+unigram,25,15,19,0.72
+unigram+stem,25,14,20,0.7
+unigram+lemma,25,16,20,0.738

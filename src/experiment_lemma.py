@@ -2,12 +2,13 @@
 
 import json
 
-from .experiment_qp_tfidf import CONFIGS, RETRIEVAL_LIMITATIONS, load_dev, rank_of, rank_passages, summarize
+from .experiment_qp_tfidf import CONFIGS, RETRIEVAL_LIMITATIONS, load_dev, rank_of, rank_passages, summarize, write_summary
 from .prepare_data import DATA_DIR, load_corpus
 from .question_processing import QUESTION_WORDS, STOPWORDS, tokenize
 from .retrieve_tfidf import _stem
 
 LEMMA_CACHE_PATH = DATA_DIR.parent / "cache" / "lemma_cache.json"
+SUMMARY_PATH = DATA_DIR.parent / "results" / "tfidf_lemma_summary.csv"
 
 
 def _load_lemma_cache() -> dict[str, list[list[str]]]:
@@ -51,11 +52,16 @@ def retrieval_report(dev: list[dict[str, str]]) -> None:
     print(f"== Retrieval TF-IDF (DEV, {len(dev)} soal) ==")
     print(f"{'konfigurasi':<16}{'Hit@1':>8}{'Hit@3':>8}{'MRR':>7}   peringkat per soal")
     questions = [r["question"] for r in dev]
+    summary = []
     for name, config in LEMMA_CONFIGS.items():
         ranks = [rank_of(ranking, r["evidence_passage_id"]) for ranking, r in zip(rank_passages(config, questions), dev)]
         hit1, hit3, mrr = summarize(ranks)
+        summary.append({"config": name, "questions": len(dev), "hit1": hit1, "hit3": hit3, "mrr": round(mrr, 3)})
         shown = " ".join("-" if rank is None else str(rank) for rank in ranks)
         print(f"{name:<16}{hit1:>5}/{len(dev)}{hit3:>5}/{len(dev)}{mrr:>7.3f}   {shown}")
+    print()
+    write_summary(SUMMARY_PATH, summary)
+    print(f"ringkasan disimpan di {SUMMARY_PATH.relative_to(DATA_DIR.parent)}")
     print()
 
 

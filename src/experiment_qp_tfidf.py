@@ -9,7 +9,8 @@ from .prepare_data import DATA_DIR, load_corpus
 from .question_processing import detect_answer_type
 from .retrieve_tfidf import _index_tokens, _stem_tokens, retrieve_tfidf
 
-RESULTS_PATH = DATA_DIR.parent / "results" / "retrieval_dev.csv"
+RESULTS_PATH = DATA_DIR.parent / "results" / "tfidf_dev.csv"
+SUMMARY_PATH = DATA_DIR.parent / "results" / "tfidf_dev_summary.csv"
 SYSTEM_CONFIG = "unigram+stem"
 
 
@@ -88,10 +89,12 @@ def retrieval_report(dev: list[dict[str, str]]) -> tuple[list, list]:
     print(f"{'konfigurasi':<16}{'Hit@1':>8}{'Hit@3':>8}{'MRR':>7}   peringkat per soal")
     questions = [r["question"] for r in dev]
     rows = []
+    summary = []
     for name, config in CONFIGS.items():
         rankings = rank_passages(config, questions)
         ranks = [rank_of(ranking, r["evidence_passage_id"]) for ranking, r in zip(rankings, dev)]
         hit1, hit3, mrr = summarize(ranks)
+        summary.append({"config": name, "questions": len(dev), "hit1": hit1, "hit3": hit3, "mrr": round(mrr, 3)})
         shown = " ".join("-" if rank is None else str(rank) for rank in ranks)
         print(f"{name:<16}{hit1:>5}/{len(dev)}{hit3:>5}/{len(dev)}{mrr:>7.3f}   {shown}")
         for ranking, row, rank in zip(rankings, dev, ranks):
@@ -113,7 +116,9 @@ def retrieval_report(dev: list[dict[str, str]]) -> tuple[list, list]:
         writer = csv.DictWriter(handle, fieldnames=list(rows[0]))
         writer.writeheader()
         writer.writerows(rows)
+    write_summary(SUMMARY_PATH, summary)
     print(f"hasil per soal disimpan di {RESULTS_PATH.relative_to(DATA_DIR.parent)}")
+    print(f"ringkasan disimpan di {SUMMARY_PATH.relative_to(DATA_DIR.parent)}")
     print()
     return system_rankings, system_ranks
 
@@ -123,6 +128,15 @@ def _check_same_as_system(rankings, questions) -> None:
         expected = [p["passage_id"] for p in retrieve_tfidf(question, k=3)]
         if [pid for pid, score in ranking[:3] if score > 0] != expected:
             raise RuntimeError(f"Konfigurasi {SYSTEM_CONFIG} berbeda dengan retrieve_tfidf pada: {question}")
+
+
+def write_summary(path, summary: list[dict]) -> None:
+    """Simpan Hit@1, Hit@3, dan MRR per konfigurasi."""
+    path.parent.mkdir(exist_ok=True)
+    with path.open("w", encoding="utf-8", newline="") as handle:
+        writer = csv.DictWriter(handle, fieldnames=["config", "questions", "hit1", "hit3", "mrr"])
+        writer.writeheader()
+        writer.writerows(summary)
 
 
 def failure_report(dev: list[dict[str, str]], rankings: list, ranks: list) -> None:
