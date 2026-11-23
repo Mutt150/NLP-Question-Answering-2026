@@ -3,3 +3,6 @@
 
 # Orang 2: TF-IDF dan cosine similarity
 scikit-learn==1.8.0
+
+# Orang 2: stemming Bahasa Indonesia
+Sastrawi==1.0.1
