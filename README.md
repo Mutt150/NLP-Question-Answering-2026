@@ -28,7 +28,7 @@ Saat ini keduanya memberi pesan bahwa `analyze_question` belum tersedia (kode ke
 data/
   corpus/DOC001.txt … DOC015.txt   Teks 15 tokoh, satu tokoh per file
   sources.csv                      Judul, nama file, tautan revisi, dan lisensi
-  qa_dev.csv                       10 pertanyaan untuk pengembangan
+  qa_dev.csv                       25 pertanyaan untuk pengembangan (DEV001–DEV025)
   qa_test_template.csv             20 ID final, kolom lainnya masih kosong
   processed/passages.csv           75 passage yang dibaca kedua sistem
   processed/qa_dev.csv             Salinan DEV dengan kolom evidence_passage_id

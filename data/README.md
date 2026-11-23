@@ -8,13 +8,13 @@ Korpus ekstraktif bahasa Indonesia untuk proyek Pemrosesan Bahasa Alami Universi
 | ------------------------------------------------ | ---------------------------------------------------------------------------------------------------------- |
 | `data/corpus/DOC001.txt` sampai `DOC015.txt` | Satu tokoh per TXT. Paragraf dipisahkan oleh satu baris kosong.                                            |
 | `data/sources.csv`                             | Satu artikel Wikipedia bahasa Indonesia per dokumen, dengan tautan permanen dan lisensi.                   |
-| `data/qa_dev.csv`                              | Sepuluh pertanyaan pengembangan dengan jawaban pendek dan bukti.                                           |
+| `data/qa_dev.csv`                              | 25 soal DEV dengan jawaban dan bukti. Mutiara menyusun DEV001–DEV010, Farhan menambahkan DEV011–DEV025.  |
 | `data/qa_test_template.csv`                    | Dua puluh ID untuk evaluasi akhir. Lima anggota mengisi dan memeriksa masing-masing empat pertanyaan baru. |
 
 ### Kolom CSV
 
 - **Sumber.** `doc_id` adalah ID tokoh. `title` adalah nama tokoh dalam dataset dan `filename` adalah nama TXT. `source_title` memuat judul artikel, `publisher` memuat nama situs, dan `source_url` membuka versi artikel yang dikutip. `access_date` menggunakan format bulan/hari/tahun. `license` memuat nama lisensi dan tautan ketentuannya.
-- **Pengembangan.** `question_id`, `question`, dan `answer_type` memuat ID, pertanyaan, dan tipe jawaban. `ground_truth` berisi jawaban acuan. `evidence_doc_id` dan `evidence_paragraph` menunjuk dokumen dan paragraf, dihitung mulai dari 1. `evidence_text` adalah kalimat pendukung yang terdapat dalam paragraf itu.
+- **Pengembangan.** `question_id`, `question`, dan `answer_type` memuat ID, pertanyaan, dan tipe jawaban. `ground_truth` berisi jawaban acuan. `evidence_doc_id` dan `evidence_paragraph` menunjuk dokumen dan paragraf, dihitung mulai dari 1. `evidence_text` berisi kutipan persis dari paragraf tersebut.
 - **Evaluasi akhir.** Template menggunakan kolom pengembangan serta `author` untuk nama penyusun. Hanya kolom `question_id` yang terisi.
 
 ## Asal teks

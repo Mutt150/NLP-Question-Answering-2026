@@ -28,10 +28,10 @@ def write_table(path, rows):
 
 
 class DatasetTests(unittest.TestCase):
-    def test_15_txt_dan_metadata_identik_dengan_paket(self):
+    def test_checksum_15_txt_dan_tiga_csv_serta_metadata(self):
         names = [f"DOC{number:03d}.txt" for number in range(1, 16)]
         self.assertEqual(sorted(p.name for p in (DATA_DIR / "corpus").glob("*.txt")), names)
-        # SHA256SUMS menyimpan sidik jari berkas saat paket asli diarsipkan.
+        # SHA256SUMS mencatat sidik jari berkas untuk versi dataset yang disepakati.
         expected_files = [f"corpus/{name}" for name in names] + list(SOURCE_CSVS)
         lines = (DATA_DIR / "SHA256SUMS").read_text(encoding="ascii").splitlines()
         checksums = [line.split("  ", 1) for line in lines]
@@ -72,12 +72,12 @@ class DatasetTests(unittest.TestCase):
                 })
         self.assertCountEqual(by_id.keys(), expected_ids)
 
-    def test_10_soal_dev_dan_kutipan_pada_passage_asli(self):
+    def test_25_soal_dev_dan_kutipan_pada_passage_asli(self):
         _, originals = read_table(DATA_DIR / "qa_dev.csv")
         fields, linked = read_table(DATA_DIR / "processed" / "qa_dev.csv")
         self.assertEqual(fields, (*DEV_FIELDS, "evidence_passage_id"))
-        self.assertEqual(len(linked), 10)
-        self.assertEqual(len({q["question_id"] for q in linked}), 10)
+        expected_ids = [f"DEV{number:03d}" for number in range(1, 26)]
+        self.assertEqual([row["question_id"] for row in linked], expected_ids)
         passages = {p["passage_id"]: p["text"] for p in load_corpus()}
         for row, original in zip(linked, originals, strict=True):
             passage_id = f"{original['evidence_doc_id']}_P{int(original['evidence_paragraph']):02d}"
@@ -107,7 +107,7 @@ class PreparationTests(unittest.TestCase):
     def test_regenerasi_dua_kali_dan_template_tetap_utuh(self):
         # Penyiapan berjalan di folder sementara supaya data proyek tetap utuh.
         for _ in range(2):
-            self.assertEqual(prepare_data(self.data), (75, 10))
+            self.assertEqual(prepare_data(self.data), (75, 25))
             for name in ("passages.csv", "qa_dev.csv"):
                 self.assertEqual((self.output / name).read_bytes(), (DATA_DIR / "processed" / name).read_bytes())
         for name in SOURCE_CSVS:

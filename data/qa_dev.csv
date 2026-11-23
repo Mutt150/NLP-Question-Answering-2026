@@ -9,3 +9,18 @@ DEV007,Kapan Dewi Sartika mendirikan Sakola Istri di Pendopo Kabupaten Bandung?,
 DEV008,Apa jabatan Agus Salim ketika ia mulai bekerja di Harian Neratja pada 1915?,FACT,Wakil Redaktur,DOC010,4,Kemudian pada tahun 1915 ia terjun ke dunia jurnalistik di Harian Neratja sebagai Wakil Redaktur.
 DEV009,Partai apa yang didirikan Sutan Sjahrir pada 1948?,ORGANIZATION,Partai Sosialis Indonesia,DOC011,2,Sjahrir mendirikan Partai Sosialis Indonesia pada tahun 1948.
 DEV010,Siapa ayah Martha Christina Tiahahu?,PERSON,Kapitan Paulus Tiahahu,DOC015,2,"Ia adalah putri dari Kapitan Paulus Tiahahu, seorang pemimpin dari Soa Uluputi."
+DEV011,Di mana Pangeran Diponegoro dilahirkan?,LOCATION,Yogyakarta,DOC006,2,Diponegoro lahir di Yogyakarta pada tanggal 11 November 1785
+DEV012,Di mana Pangeran Diponegoro membuat markas setelah menyingkir dari Tegalrejo?,LOCATION,Gua Selarong,DOC006,5,Pangeran Diponegoro menyingkir dari Tegalrejo dan membuat markas di Gua Selarong.
+DEV013,Kapan Thomas Matulessy ditetapkan sebagai Pahlawan Nasional?,DATE,6 November 1973,DOC008,1,Thomas Matulessy ditetapkan sebagai Pahlawan Nasional oleh Presiden Soeharto pada 6 November 1973.
+DEV014,Pangkat apa yang dicapai Pattimura selama bertugas di kemiliteran Inggris?,FACT,Sersan Mayor,DOC008,4,sehingga menghantarkannya mencapai pangkat Sersan Mayor.
+DEV015,Sekolah apa yang dimasuki Tan Malaka pada tahun 1908?,ORGANIZATION,Kweekschool,DOC012,3,"Pada tahun 1908, Tan Malaka bersekolah di Kweekschool"
+DEV016,Siapa yang digantikan Tan Malaka sebagai ketua PKI?,PERSON,Semaun,DOC012,5,"Tan Malaka kemudian menggantikan Semaun, yang meninggalkan Hindia Belanda pada bulan Oktober, sebagai ketua PKI setelah kongres pada tanggal 24 – 25 Desember 1921 di Semarang."
+DEV017,Siapa nama asli Tuanku Imam Bonjol?,PERSON,Muhammad Shawab,DOC013,3,Nama asli dari Tuanku Imam Bonjol adalah Muhammad Shawab
+DEV018,Siapa ayah Tuanku Imam Bonjol?,PERSON,Khatib Bayanuddin,DOC013,3,"Ayahnya, Khatib Bayanuddin merupakan seorang alim ulama"
+DEV019,Perjanjian apa yang ditandatangani Sultan Hasanuddin pada 18 November 1667?,FACT,Perjanjian Bungaya,DOC014,6,Sultan Hasanuddin menandatangani Perjanjian Bungaya pada tanggal 18 November 1667 di Bungaya.
+DEV020,Karena penyakit apa Sultan Hasanuddin meninggal?,FACT,penyakit ari-ari,DOC014,6,Sultan Hasanuddin wafat pada tanggal 12 Juni 1670 karena penyakit ari-ari.
+DEV021,Di mana Cut Nyak Dhien diasingkan?,LOCATION,Sumedang,DOC003,2,Keputusan pengasingan dikeluarkan pada 1906 dan ia tiba di Sumedang pada 1907.
+DEV022,Berapa jumlah anak perempuan Mohammad Hatta?,NUMBER,3,DOC004,2,dikaruniai 3 anak perempuan
+DEV023,Siapa istri Mohammad Hatta?,PERSON,Siti Rahmiati,DOC004,2,Hatta menikah dengan Siti Rahmiati di Bandung.
+DEV024,Kapan buku kumpulan surat Kartini diterbitkan?,DATE,1911,DOC002,5,Buku kumpulan surat Kartini ini diterbitkan pada 1911.
+DEV025,Di mana Agus Salim dimakamkan?,LOCATION,Taman Makam Pahlawan Kalibata,DOC010,6,dimakamkan di Taman Makam Pahlawan Kalibata
