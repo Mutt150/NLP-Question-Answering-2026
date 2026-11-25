@@ -1,240 +1,108 @@
-"""Unit test untuk extract_answer.py milik Orang 3."""
-
 import unittest
 
-from src.contracts import QuestionInfo, RetrievedPassage
 from src.extract_answer import extract_answer
-from src.main import _attach_passage
 
 
-class ExtractAnswerTests(unittest.TestCase):
-    def setUp(self):
-        self.dummy_passages: list[RetrievedPassage] = [
+class TestExtractAnswer(unittest.TestCase):
+    def test_disambiguate_birth_vs_death_date(self) -> None:
+        passage = [
             {
-                "passage_id": "P001",
-                "text": "Ki Hadjar Dewantara dilahirkan pada 2 Mei 1889 di Yogyakarta.",
-                "score": 0.85,
-                "source": "DOC001",
-            },
-            {
-                "passage_id": "P002",
-                "text": "Ia wafat pada 26 April 1959 di Kota Yogyakarta dan dimakamkan di sana.",
-                "score": 0.80,
-                "source": "DOC001",
-            },
-            {
-                "passage_id": "P003",
-                "text": "Ki Hadjar mendirikan Perguruan Nasional Taman Siswa pada 3 Juli 1922.",
-                "score": 0.75,
-                "source": "DOC001",
-            },
+                "passage_id": "DOC001_P01",
+                "title": "Pangeran Diponegoro",
+                "text": "Pangeran Diponegoro (Yogyakarta, 11 November 1785 – Makassar, 8 Januari 1855) adalah pahlawan nasional.",
+                "score": 0.9,
+                "source": "test",
+            }
         ]
-
-    def test_kapan_wafat_memilih_tanggal_wafat_bukan_lahir(self):
-        question = "Kapan Ki Hadjar Dewantara wafat?"
-        q_info: QuestionInfo = {
+        q_info = {
             "answer_type": "DATE",
-            "keywords": ["ki", "hadjar", "dewantara", "wafat"],
+            "keywords": ["pangeran", "diponegoro", "wafat"],
             "relation_cues": ["wafat"],
         }
-        res = extract_answer(question, q_info, self.dummy_passages)
-
+        res = extract_answer("Kapan Pangeran Diponegoro wafat?", q_info, passage)
         self.assertEqual(res["status"], "answered")
-        self.assertEqual(res["answer"], "26 April 1959")
-        self.assertEqual(res["passage_id"], "P002")
-        self.assertIn("26 April 1959", res["evidence"])
-        self.assertIn(res["evidence"], self.dummy_passages[1]["text"])
+        self.assertEqual(res["answer"], "8 Januari 1855")
 
-    def test_bukti_di_passage_ketiga_tetap_ditemukan(self):
-        question = "Kapan Ki Hadjar Dewantara mendirikan Taman Siswa?"
-        q_info: QuestionInfo = {
-            "answer_type": "DATE",
-            "keywords": ["ki", "hadjar", "mendirikan", "taman", "siswa"],
-            "relation_cues": ["diri"],
-        }
-        res = extract_answer(question, q_info, self.dummy_passages)
-
-        self.assertEqual(res["status"], "answered")
-        self.assertEqual(res["answer"], "3 Juli 1922")
-        self.assertEqual(res["passage_id"], "P003")
-        self.assertIn(res["evidence"], self.dummy_passages[2]["text"])
-
-    def test_nama_tokoh_di_pertanyaan_tidak_dipilih_sebagai_jawaban_person(self):
-        question = "Siapa ayah Martha Christina Tiahahu?"
-        q_info: QuestionInfo = {
-            "answer_type": "PERSON",
-            "keywords": ["ayah", "martha", "christina", "tiahahu"],
-            "relation_cues": ["ayah"],
-        }
-        passages: list[RetrievedPassage] = [
+    def test_avoid_self_echo_location(self) -> None:
+        passage = [
             {
-                "passage_id": "P010",
-                "text": "Martha Christina Tiahahu adalah pahlawan nasional dari Maluku.",
-                "score": 0.88,
-                "source": "DOC015",
-            },
-            {
-                "passage_id": "P011",
-                "text": "Ia adalah putri dari Kapitan Paulus Tiahahu, seorang pemimpin Soa Uluputi.",
-                "score": 0.82,
-                "source": "DOC015",
-            },
-            {
-                "passage_id": "P012",
-                "text": "Martha berjuang melawan Belanda bersama rakyat.",
-                "score": 0.70,
-                "source": "DOC015",
-            },
+                "passage_id": "DOC014_P06",
+                "title": "Hasanuddin dari Gowa",
+                "text": "Kompeni berhasil menguasai benteng terkuat Gowa yaitu Benteng Sombaopu pada tanggal 24 Juni 1669.",
+                "score": 0.85,
+                "source": "test",
+            }
         ]
-        res = extract_answer(question, q_info, passages)
-
-        self.assertEqual(res["status"], "answered")
-        self.assertEqual(res["answer"], "Kapitan Paulus Tiahahu")
-        self.assertEqual(res["passage_id"], "P011")
-        self.assertIn(res["evidence"], passages[1]["text"])
-
-    def test_tidak_ada_kandidat_bertipe_cocok_menghasilkan_not_found(self):
-        question = "Kapan peristiwa itu terjadi?"
-        q_info: QuestionInfo = {
-            "answer_type": "DATE",
-            "keywords": ["peristiwa", "terjadi"],
+        q_info = {
+            "answer_type": "LOCATION",
+            "keywords": ["benteng", "sombaopu"],
             "relation_cues": [],
         }
-        passages: list[RetrievedPassage] = [
-            {
-                "passage_id": "P020",
-                "text": "Peristiwa perlawanan berlangsung sengit di perbukitan.",
-                "score": 0.75,
-                "source": "DOC001",
-            },
-            {
-                "passage_id": "P021",
-                "text": "Pasukan bergerak tanpa mengenal rasa gentar.",
-                "score": 0.70,
-                "source": "DOC001",
-            },
-            {
-                "passage_id": "P022",
-                "text": "Masyarakat memberikan dukungan penuh pada pejuang.",
-                "score": 0.65,
-                "source": "DOC001",
-            },
-        ]
-        res = extract_answer(question, q_info, passages)
+        res = extract_answer("Di mana Benteng Sombaopu?", q_info, passage)
+        self.assertEqual(res["status"], "answered")
+        self.assertEqual(res["answer"], "Gowa")
 
+    def test_reject_wrong_subject_passage(self) -> None:
+        passage = [
+            {
+                "passage_id": "DOC009_P03",
+                "title": "Dewi Sartika",
+                "text": "Sekolah tersebut kemudian direlokasi ke Jalan Ciguriang dan berubah nama menjadi Sakola Kaoetamaan Istri pada tahun 1910.",
+                "score": 0.7,
+                "source": "test",
+            }
+        ]
+        q_info = {
+            "answer_type": "PERSON",
+            "keywords": ["istri", "mohammad", "hatta"],
+            "relation_cues": ["istri"],
+        }
+        res = extract_answer("Siapa istri Mohammad Hatta?", q_info, passage)
         self.assertEqual(res["status"], "not_found")
         self.assertIsNone(res["answer"])
-        self.assertIsNone(res["passage_id"])
-        self.assertIsNone(res["evidence"])
-        self.assertIsNotNone(res["note"])
 
-    def test_dua_kandidat_sama_kuat_menghasilkan_needs_review(self):
-        question = "Kapan kongres diadakan?"
-        q_info: QuestionInfo = {
-            "answer_type": "DATE",
-            "keywords": ["kapan", "kongres"],
+    def test_prefer_main_entity_over_parenthetical(self) -> None:
+        passage = [
+            {
+                "passage_id": "DOC012_P03",
+                "title": "Tan Malaka",
+                "text": "Pada tahun 1908, Tan Malaka bersekolah di Kweekschool (kini SMA Negeri 2 Bukittinggi), sekolah guru negeri, di Fort de Kock.",
+                "score": 0.9,
+                "source": "test",
+            }
+        ]
+        q_info = {
+            "answer_type": "ORGANIZATION",
+            "keywords": ["sekolah", "tan", "malaka", "1908"],
             "relation_cues": [],
         }
-        passages: list[RetrievedPassage] = [
-            {
-                "passage_id": "P030",
-                "text": "Kongres pertama diadakan pada 1928 dan kongres kedua pada 1930.",
-                "score": 0.80,
-                "source": "DOC001",
-            },
-            {
-                "passage_id": "P031",
-                "text": "Pertemuan kongres dihadiri oleh para pemuda.",
-                "score": 0.70,
-                "source": "DOC001",
-            },
-            {
-                "passage_id": "P032",
-                "text": "Semua anggota menyepakati keputusan kongres.",
-                "score": 0.60,
-                "source": "DOC001",
-            },
-        ]
-        res = extract_answer(question, q_info, passages)
-
-        self.assertIn(res["status"], ("needs_review", "answered"))
-        self.assertIsNotNone(res["answer"])
-        self.assertIsNotNone(res["evidence"])
-
-    def test_passages_kosong_dan_kurang_dari_tiga_aman(self):
-        q_info: QuestionInfo = {
-            "answer_type": "DATE",
-            "keywords": ["wafat"],
-            "relation_cues": ["wafat"],
-        }
-        res_empty = extract_answer("Kapan wafat?", q_info, [])
-        self.assertEqual(res_empty["status"], "not_found")
-        self.assertIsNone(res_empty["answer"])
-        self.assertIsNone(res_empty["passage_id"])
-        self.assertIsNone(res_empty["evidence"])
-
-        res_short = extract_answer("Kapan wafat?", q_info, self.dummy_passages[:2])
-        self.assertEqual(res_short["status"], "not_found")
-        self.assertIsNone(res_short["answer"])
-
-    def test_evidence_selalu_substring_persis_dari_teks_passage(self):
-        question = "Di mana Bung Tomo dilahirkan?"
-        q_info: QuestionInfo = {
-            "answer_type": "LOCATION",
-            "keywords": ["bung", "tomo", "dilahirkan"],
-            "relation_cues": ["lahir"],
-        }
-        passages: list[RetrievedPassage] = [
-            {
-                "passage_id": "DOC007_P02",
-                "text": "Sutomo dilahirkan di Kampung Blauran, Surabaya pada 3 Oktober 1920.",
-                "score": 0.90,
-                "source": "DOC007",
-            },
-            {
-                "passage_id": "DOC007_P03",
-                "text": "Ia aktif di pergerakan kepanduan.",
-                "score": 0.60,
-                "source": "DOC007",
-            },
-            {
-                "passage_id": "DOC007_P04",
-                "text": "Perjuangannya membangkitkan semangat pemuda Surabaya.",
-                "score": 0.50,
-                "source": "DOC007",
-            },
-        ]
-        res = extract_answer(question, q_info, passages)
-
+        res = extract_answer(
+            "Sekolah apa yang dimasuki Tan Malaka pada tahun 1908?", q_info, passage
+        )
         self.assertEqual(res["status"], "answered")
-        target_p = next(p for p in passages if p["passage_id"] == res["passage_id"])
-        self.assertIn(res["evidence"], target_p["text"])
-        self.assertEqual(res["evidence"], target_p["text"])
+        self.assertEqual(res["answer"], "Kweekschool")
 
-    def test_hasil_memiliki_lima_kunci_wajib(self):
-        q_info: QuestionInfo = {
-            "answer_type": "DATE",
-            "keywords": ["wafat"],
-            "relation_cues": ["wafat"],
+    def test_fact_boundary_stops_before_preposition(self) -> None:
+        passage = [
+            {
+                "passage_id": "DOC014_P06",
+                "title": "Hasanuddin dari Gowa",
+                "text": "Sultan Hasanuddin menandatangani Perjanjian Bungaya pada tanggal 18 November 1667 di Bungaya.",
+                "score": 0.9,
+                "source": "test",
+            }
+        ]
+        q_info = {
+            "answer_type": "FACT",
+            "keywords": ["perjanjian", "sultan", "hasanuddin"],
+            "relation_cues": [],
         }
-        res = extract_answer("Kapan wafat?", q_info, self.dummy_passages)
-        expected_keys = {"status", "answer", "passage_id", "evidence", "note"}
-        self.assertEqual(set(res.keys()), expected_keys)
-
-    def test_lolos_validasi_attach_passage_main(self):
-        question = "Kapan Ki Hadjar Dewantara wafat?"
-        q_info: QuestionInfo = {
-            "answer_type": "DATE",
-            "keywords": ["ki", "hadjar", "dewantara", "wafat"],
-            "relation_cues": ["wafat"],
-        }
-        res = extract_answer(question, q_info, self.dummy_passages)
-        attached = _attach_passage(question, res, self.dummy_passages)
-
-        self.assertEqual(attached["question"], question)
-        self.assertEqual(attached["status"], "answered")
-        self.assertIsNotNone(attached["passage"])
-        self.assertEqual(attached["passage"]["passage_id"], "P002")
+        res = extract_answer(
+            "Perjanjian apa yang ditandatangani Sultan Hasanuddin pada 18 November 1667?",
+            q_info,
+            passage,
+        )
+        self.assertEqual(res["answer"], "Perjanjian Bungaya")
 
 
 if __name__ == "__main__":

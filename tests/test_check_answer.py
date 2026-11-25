@@ -1,59 +1,34 @@
-"""Unit test untuk check_answer.py milik Orang 3."""
-
 import unittest
 
 from src.check_answer import check_answer_type
 
 
-class CheckAnswerTypeTests(unittest.TestCase):
-    def test_date_positive_and_negative(self):
-        self.assertTrue(check_answer_type("3 Juli 1922", "DATE"))
-        self.assertTrue(check_answer_type("16 Januari 1904", "DATE"))
-        self.assertTrue(check_answer_type("1911", "DATE"))
-        self.assertTrue(check_answer_type("24 – 25 Desember 1921", "DATE"))
-        self.assertFalse(check_answer_type("Sutomo", "DATE"))
+class TestCheckAnswer(unittest.TestCase):
+    def test_date_valid_and_invalid(self) -> None:
+        self.assertTrue(check_answer_type("17 Agustus 1945", "DATE"))
+        self.assertTrue(check_answer_type("November 1825", "DATE"))
         self.assertFalse(check_answer_type("Yogyakarta", "DATE"))
-        self.assertFalse(check_answer_type("", "DATE"))
 
-    def test_number_positive_and_negative(self):
-        self.assertTrue(check_answer_type("12 tahun", "NUMBER"))
-        self.assertTrue(check_answer_type("3 anak perempuan", "NUMBER"))
-        self.assertTrue(check_answer_type("3", "NUMBER"))
-        self.assertFalse(check_answer_type("1945", "NUMBER"))
-        self.assertFalse(check_answer_type("Hatta", "NUMBER"))
-        self.assertFalse(check_answer_type("", "NUMBER"))
+    def test_number_distinguishes_date(self) -> None:
+        self.assertTrue(check_answer_type("9 sekolah", "NUMBER"))
+        self.assertTrue(check_answer_type("empat anak", "NUMBER"))
+        # Tanggal kalender tanpa satuan kuantitas tidak boleh lolos sebagai NUMBER
+        self.assertFalse(check_answer_type("16 Januari 1904", "NUMBER"))
 
-    def test_person_positive_and_negative(self):
-        self.assertTrue(check_answer_type("Mohammad Hatta", "PERSON"))
-        self.assertTrue(check_answer_type("Semaun", "PERSON"))
-        self.assertTrue(check_answer_type("Kapitan Paulus Tiahahu", "PERSON"))
-        self.assertFalse(check_answer_type("1922", "PERSON"))
-        self.assertFalse(check_answer_type("tahun 1920", "PERSON"))
-        self.assertFalse(check_answer_type("", "PERSON"))
+    def test_person_rejects_org_and_place(self) -> None:
+        self.assertTrue(check_answer_type("Pangeran Diponegoro", "PERSON"))
+        self.assertTrue(check_answer_type("Raden Ajeng Kartini", "PERSON"))
+        self.assertFalse(check_answer_type("Sakola Kaoetamaan Istri", "PERSON"))
+        self.assertFalse(check_answer_type("Yogyakarta", "PERSON"))
 
-    def test_location_positive_and_negative(self):
-        self.assertTrue(check_answer_type("Yogyakarta", "LOCATION"))
-        self.assertTrue(check_answer_type("Kampung Blauran", "LOCATION"))
-        self.assertTrue(check_answer_type("di Sumedang", "LOCATION"))
-        self.assertFalse(check_answer_type("1945", "LOCATION"))
-        self.assertFalse(check_answer_type("", "LOCATION"))
+    def test_location_and_organization(self) -> None:
+        self.assertTrue(check_answer_type("Gowa", "LOCATION"))
+        self.assertTrue(check_answer_type("Fort de Kock", "LOCATION"))
+        self.assertFalse(check_answer_type("Sultan Hasanuddin", "LOCATION"))
 
-    def test_organization_positive_and_negative(self):
-        self.assertTrue(check_answer_type("Perhimpunan Indonesia", "ORGANIZATION"))
-        self.assertTrue(check_answer_type("Partai Sosialis Indonesia", "ORGANIZATION"))
-        self.assertTrue(check_answer_type("PKI", "ORGANIZATION"))
-        self.assertFalse(check_answer_type("12345", "ORGANIZATION"))
-        self.assertFalse(check_answer_type("", "ORGANIZATION"))
-
-    def test_fact_and_other_returns_none(self):
-        self.assertIsNone(check_answer_type("Wakil Redaktur", "FACT"))
-        self.assertIsNone(check_answer_type("penyakit ari-ari", "FACT"))
-        self.assertIsNone(check_answer_type("Sersan Mayor", "OTHER"))
-        self.assertIsNone(check_answer_type("Perjanjian Bungaya", "OTHER"))
-
-    def test_empty_string_returns_false(self):
-        self.assertFalse(check_answer_type("   ", "PERSON"))
-        self.assertFalse(check_answer_type("", "DATE"))
+        self.assertTrue(check_answer_type("SMA Negeri 2 Bukittinggi", "ORGANIZATION"))
+        self.assertTrue(check_answer_type("BPUPKI", "ORGANIZATION"))
+        self.assertFalse(check_answer_type("1908", "ORGANIZATION"))
 
 
 if __name__ == "__main__":

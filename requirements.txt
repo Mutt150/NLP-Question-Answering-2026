@@ -6,3 +6,7 @@ scikit-learn==1.8.0
 
 # Orang 2: stemming Bahasa Indonesia
 Sastrawi==1.0.1
+
+# Orang 3: NER lokal Bahasa Indonesia (cahya/bert-base-indonesian-NER)
+transformers>=4.40.0
+torch>=2.2.0
