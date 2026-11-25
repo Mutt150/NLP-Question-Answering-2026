@@ -1,10 +1,12 @@
 # TP PBA 2026 – Question Answering Bahasa Indonesia
 
-Kelompok kami membandingkan dua cara menjawab pertanyaan bahasa Indonesia dari biografi pahlawan nasional. QA klasik mencari passage dengan TF-IDF lalu mengambil jawaban dari teksnya. RAG mencari passage dengan embedding lalu meminta LLM menjawab berdasarkan bukti itu. Saat ini analisis pertanyaan dan pencarian TF-IDF sudah bisa dicoba dengan 25 soal DEV.
+Kelompok kami membandingkan dua cara menjawab pertanyaan bahasa Indonesia berdasarkan biografi 15 pahlawan nasional. Sistem pertama, QA klasik, mencari passage dengan TF-IDF, kemudian mengambil jawaban langsung dari teks. Sistem kedua, RAG, mencari passage dengan embedding, kemudian meminta LLM menjawab berdasarkan passage tersebut. Kedua sistem menerima pertanyaan yang sama sehingga hasilnya dapat dibandingkan.
+
+Per 25 November 2026, analisis pertanyaan, pencarian TF-IDF, pencarian dense, dan program evaluasi telah tersedia. Pengambil jawaban klasik dan generator RAG masih dalam pengerjaan.
 
 ## Mulai dari sini
 
-Jalankan perintah berikut dari folder utama repo, tempat `README.md` dan `src/` berada. Proyek sudah diuji dengan Python 3.12.4. Instal dependensi terlebih dahulu. Modul Farhan memakai scikit-learn untuk TF-IDF dan cosine similarity, serta Sastrawi untuk stemming bahasa Indonesia.
+Seluruh perintah dijalankan dari folder utama repo, yaitu folder yang berisi `README.md` dan `src/`. Proyek ini diuji dengan Python 3.12.4. Modul TF-IDF memakai scikit-learn untuk TF-IDF dan cosine similarity serta Sastrawi untuk stemming bahasa Indonesia. Pencarian dense memakai sentence-transformers. Pada penggunaan pertama, pencarian dense mengunduh model E5 berukuran sekitar 470 MB sehingga memerlukan koneksi internet.
 
 ```shell
 python -m pip install -r requirements.txt
@@ -12,65 +14,111 @@ python -m src.prepare_data
 python -B -m unittest discover -s tests -v
 ```
 
-`src.prepare_data` membaca TXT dan metadata lalu membuat ulang dua CSV di `data/processed/`. Tes memeriksa data, preprocessing, analisis pertanyaan, retrieval, dan sambungan antarmodul. Hasil `expected failure` menandai contoh yang masih menjadi keterbatasan modul.
+`src.prepare_data` membaca berkas TXT dan metadata, kemudian membuat ulang dua CSV di `data/processed/`. Tes memeriksa data, preprocessing, analisis pertanyaan, retrieval, evaluasi, dan sambungan antarmodul. Hasil `expected failure` menandai contoh yang masih menjadi keterbatasan modul, bukan kesalahan.
 
-Untuk melihat passage yang masuk tiga besar pada tiap soal DEV, jalankan `python -m src.experiment_qp_tfidf` lalu buka `results/tfidf_dev.csv`. Eksperimen pembanding `python -m src.experiment_lemma` memakai cache lema yang sudah tersedia. Untuk menghasilkan lema pada teks baru, eksperimen itu memerlukan Stanza dan model bahasa Indonesia.
-
-Untuk mencoba pertanyaan yang sama di kedua mode, jalankan perintah di bawah. Hapus opsi `--question` kalau ingin mengetik langsung di terminal.
+Untuk mencoba satu pertanyaan pada kedua mode, jalankan perintah berikut. Hapus opsi `--question` apabila pertanyaan ingin diketik langsung di terminal.
 
 ```shell
 python -m src.main --mode classic --question "Siapa ayah Martha Christina Tiahahu?"
 python -m src.main --mode rag --question "Siapa ayah Martha Christina Tiahahu?"
 ```
 
-Saat ini mode `classic` menganalisis pertanyaan dan mencari passage, lalu berhenti di `extract_answer` milik Khansa. Mode `rag` menganalisis pertanyaan, lalu berhenti di `retrieve_dense` milik Jepri. Terminal menampilkan nama modul yang belum tersedia dan keluar dengan kode 3. Setelah modul tim lengkap, perintah yang sama akan menampilkan jawaban, kutipan, passage, dan URL sumber.
+Apabila ada modul yang belum tersedia, terminal menampilkan nama modul tersebut dan keluar dengan kode 3. Setelah seluruh modul tersedia, perintah yang sama menampilkan jawaban, kutipan, passage, dan URL sumber.
+
+Perintah lain yang dapat digunakan:
+
+```shell
+# tiga passage teratas dari pencarian dense
+python -m src.retrieve_dense Di mana Benteng Sombaopu?
+
+# perbandingan pencarian dense dan TF-IDF pada 25 soal DEV
+# (tambahkan --hanya-gagal untuk melihat rincian soal yang buktinya tidak masuk tiga besar)
+python -m src.evaluate --retrieval data/qa_dev.csv --retriever both
+
+# passage tiga besar TF-IDF pada tiap soal DEV, hasilnya di results/tfidf_dev.csv
+python -m src.experiment_qp_tfidf
+
+# uji coba alur evaluasi pada soal DEV (bukan evaluasi akhir)
+python -m src.evaluate --dev
+```
+
+Eksperimen pembanding `python -m src.experiment_lemma` memakai cache lema yang sudah tersedia. Untuk menghasilkan lema pada teks baru, eksperimen tersebut memerlukan Stanza dan model bahasa Indonesia.
 
 ## Isi repo dan alur data
 
 ```text
 data/
-  corpus/DOC001.txt … DOC015.txt   Teks 15 tokoh, satu tokoh per file
-  sources.csv                      Judul, nama file, tautan revisi, dan lisensi
+  corpus/DOC001.txt … DOC015.txt   Teks 15 tokoh, satu tokoh per berkas
+  sources.csv                      Judul, nama berkas, tautan revisi, dan lisensi
   qa_dev.csv                       25 pertanyaan untuk pengembangan (DEV001–DEV025)
   qa_test_template.csv             20 ID final, kolom lainnya masih kosong
+  qa_test_parts/                   Soal uji tiap anggota sebelum digabung
   processed/passages.csv           75 passage yang dibaca kedua sistem
   processed/qa_dev.csv             Salinan DEV dengan kolom evidence_passage_id
   README.md                        Asal teks dan cara membaca dataset
   SHA256SUMS                       Acuan tes untuk mendeteksi perubahan pada 15 TXT dan 3 CSV sumber
 src/                               Penyiapan data dan modul QA
-tests/                             Tes otomatis data dan kode
+tests/                             Tes otomatis untuk data dan kode
 cache/                             Hasil stemming dan lemmatisasi untuk dipakai ulang
-results/                           Hasil eksperimen DEV dan tempat evaluasi final tim
+results/                           Hasil eksperimen DEV dan tempat evaluasi final
 laporan/                           Laporan dan pembagian kontribusi
 ```
 
-Mutiara menyusun sendiri paket dataset biografi. Teks biografi dikutip dari kontributor Wikipedia bahasa Indonesia dengan lisensi CC BY-SA 4.0. Tautan revisi tiap artikel ada di metadata. [Asal teks](data/README.md) · [Sumber tiap tokoh](data/sources.csv)
+Paket dataset biografi disusun oleh Mutiara. Teks biografi dikutip dari kontributor Wikipedia bahasa Indonesia dengan lisensi CC BY-SA 4.0, dan tautan revisi tiap artikel tercantum pada metadata. [Asal teks](data/README.md) · [Sumber tiap tokoh](data/sources.csv)
 
-**PBA02.** Di `src/preprocessing.py`, `split_paragraphs()` memisahkan teks pada baris kosong. Satu paragraf menjadi satu passage. Spasi di dalam paragraf, huruf kapital, angka dan tanda baca tetap tersedia untuk NER, RAG dan kutipan. Kalau butuh spasi yang seragam untuk pencarian, pakai `preprocess()` pada salinan teks.
+**PBA02.** Pada `src/preprocessing.py`, fungsi `split_paragraphs()` memisahkan teks pada baris kosong, dan satu paragraf menjadi satu passage. Spasi di dalam paragraf, huruf kapital, angka, dan tanda baca tetap dipertahankan untuk kebutuhan NER, RAG, dan kutipan. Apabila pencarian memerlukan spasi yang seragam, gunakan `preprocess()` pada salinan teks.
 
-**Contoh.** DEV001 merujuk dokumen `DOC001`, paragraf 4. Penyiapan data membentuk ID `DOC001_P04`, mengecek kutipannya, lalu menyimpan ID itu di DEV olahan. Korpus berisi `passage_id, doc_id, title, text, source`. File yang disebut `corpus.csv` di rencana awal sekarang tersedia sebagai `data/processed/passages.csv`. Kedua retriever bisa membacanya dengan `load_corpus()`.
+**Contoh.** DEV001 merujuk dokumen `DOC001`, paragraf 4. Penyiapan data membentuk ID `DOC001_P04`, memeriksa kutipannya, lalu menyimpan ID tersebut pada DEV olahan. Korpus berisi `passage_id, doc_id, title, text, source`. Berkas yang disebut `corpus.csv` pada rencana awal kini tersedia sebagai `data/processed/passages.csv`, dan kedua retriever dapat membacanya dengan `load_corpus()`.
 
-## Siapa mengerjakan file apa?
+## Pembagian tugas
 
-Tabel ini menunjukkan tugas dan file yang dipegang tiap anggota. Rincian lengkap ada di bagian 5 rencana kelompok, lalu bagian 8–10 untuk jadwal, laporan, dan evaluasi. [Rencana final lima anggota](TP_PBA_2026_Rencana_Final_5_Anggota.md)
+Tabel berikut menunjukkan tugas dan berkas yang dipegang tiap anggota. Rincian lengkap tersedia pada bagian 5 rencana kelompok, sedangkan jadwal, laporan, dan evaluasi pada bagian 8–10. [Rencana final lima anggota](TP_PBA_2026_Rencana_Final_5_Anggota.md)
 
-| Anggota               | File yang dipegang                                                                                                                                                   | Yang perlu dikerjakan                                                                                                                                                                                                                                                                                     |
-| --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **1 - Mutiara** | `data/`, `src/prepare_data.py`, `src/preprocessing.py`, `src/contracts.py`, `src/main.py`, `tests/`, `README.md`, `requirements.txt`, `.gitignore` | Siapkan data, jaga ID dan kutipan, sepakati format dengan tim, lalu hubungkan kedua sistem. Setelah modul masuk, coba 3–5 pertanyaan DEV yang sama di kedua mode dan simpan contoh jawaban beserta sumber untuk laporan.                                                                                 |
-| **2 - Farhan**  | `src/question_processing.py`, `src/retrieve_tfidf.py` | `analyze_question(question)` mengenali tipe jawaban, kata kunci, dan petunjuk relasi seperti *lahir*. `retrieve_tfidf(question, k=3)` mengurutkan passage dengan TF-IDF dan cosine similarity. Farhan menguji kedua fungsi pada soal DEV. |
-| **3 - Khansa**  | `src/extract_answer.py`, `src/check_answer.py`                                                                                                                   | Isi `extract_answer(question, q_info, passages)`. Gunakan NER untuk nama, lokasi dan organisasi, serta Regex untuk tanggal dan angka. Pilih jawaban dan kutipannya. Coba passage dengan dua tanggal atau nama. Isi `check_answer_type()` untuk dipakai bersama Ammar.                                 |
-| **4 - Jepri**   | `src/retrieve_dense.py`, `src/evaluate.py`                                                                                                                       | Isi `retrieve_dense(question, k=3)` dengan embedding multibahasa, simpan vektor korpus, lalu ambil tiga passage teratas. Isi `evaluate_all(qa_test)` dan buat `results/evaluation_results.csv` saat kedua sistem siap. Tim memeriksa benar/salah dan menghitung akurasi masing-masing dari 20 soal. |
-| **5 - Ammar**   | `src/rag_generate.py`                                                                                                                                              | Isi `rag_answer(question, passages, q_info)`. Susun prompt dari pertanyaan dan tiga passage Jepri beserta ID. Coba modelnya, cocokkan kutipan, dan gunakan pemeriksaan tipe dari Khansa. Bedakan kasus bukti kurang, jawaban yang perlu ditinjau, dan model gagal dipanggil.                            |
+| Anggota         | Berkas yang dipegang                                                                                                                               | Tugas                                                                                                                                                                                                                                                                                                                          |
+| --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **1 – Mutiara** | `data/`, `src/prepare_data.py`, `src/preprocessing.py`, `src/contracts.py`, `src/main.py`, `tests/`, `README.md`, `requirements.txt`, `.gitignore` | Menyiapkan data, menjaga ID dan kutipan, menyepakati format dengan tim, serta menghubungkan kedua sistem. Setelah seluruh modul tersedia, mencoba 3–5 pertanyaan DEV yang sama pada kedua mode dan menyimpan contoh jawaban beserta sumbernya untuk laporan.                                                                   |
+| **2 – Farhan**  | `src/question_processing.py`, `src/retrieve_tfidf.py`                                                                                              | `analyze_question(question)` mengenali tipe jawaban, kata kunci, dan petunjuk relasi seperti _lahir_. `retrieve_tfidf(question, k=3)` mengurutkan passage dengan TF-IDF dan cosine similarity. Kedua fungsi diuji pada soal DEV.                                                                                               |
+| **3 – Khansa**  | `src/extract_answer.py`, `src/check_answer.py`                                                                                                     | `extract_answer(question, q_info, passages)` memilih jawaban dan kutipannya, dengan NER untuk nama, lokasi, dan organisasi serta Regex untuk tanggal dan angka. `check_answer_type()` memeriksa kesesuaian jawaban dengan tipenya dan dipakai bersama Ammar.                                                                   |
+| **4 – Jepri**   | `src/retrieve_dense.py`, `src/evaluate.py`                                                                                                         | `retrieve_dense(question, k=3)` mengembalikan tiga passage teratas berdasarkan embedding multibahasa dengan vektor korpus yang disimpan. `evaluate_all(qa_test)` menjalankan 20 soal pada kedua sistem dan menulis `results/evaluation_results.csv`. Tim memeriksa benar-salahnya dan menghitung akurasi masing-masing sistem. |
+| **5 – Ammar**   | `src/rag_generate.py`                                                                                                                              | `rag_answer(question, passages, q_info)` menyusun prompt dari pertanyaan dan tiga passage beserta ID-nya, memanggil model, mencocokkan kutipan, dan memakai pemeriksaan tipe dari Khansa. Kasus bukti kurang, jawaban yang perlu ditinjau, dan kegagalan pemanggilan model dibedakan.                                          |
 
-**Bagian bareng.** Tiap orang membuat empat pertanyaan final dan memeriksa bukti milik teman. Saat tim mulai menyusun soal, salin template ke `data/qa_test.csv` dan isi salinannya. Untuk kolaborasi GitHub, kerjakan modul di branch masing-masing, jalankan tes, lalu buka pull request ke `main` untuk ditinjau teman.
+### Catatan masing-masing anggota
 
-**Laporan.** Farhan memegang Bab I–II. Mutiara dan Jepri menyusun Bab III beserta diagram kedua sistem. Semua mengisi Bab IV untuk kodenya sendiri. Jepri, Khansa dan Ammar menyusun Bab V dari hasil nyata. Mutiara mengoordinasikan abstrak, Bab VI, penggabungan `laporan/jawaban.docx` atau PDF, dan catatan kontribusi di `laporan/tanggungjawab.docx`. Migrasi data, kerangka integrasi, dokumentasi proyek dan tes Anggota 1 mendapat bantuan AI. Catat kontribusi serta pustaka yang benar-benar dipakai sesuai arahan dosen.
+**Mutiara (Anggota 1).** Saya menyusun dataset dan kontrak data, lalu menyambungkan kedua sistem melalui `main.py`. Migrasi data, kerangka integrasi, dokumentasi, dan tes bagian saya dibantu oleh AI.
+
+**Farhan (Anggota 2).** Saya mengerjakan analisis pertanyaan dan pencarian TF-IDF. Perbandingan beberapa varian TF-IDF pada soal DEV tersimpan di `results/`. Bantuan AI: [diisi oleh yang bersangkutan].
+
+**Khansa (Anggota 3).** Saya mengerjakan pengambilan jawaban dari passage. Bagian yang masih saya perbaiki adalah pemilihan jawaban ketika satu passage memuat lebih dari satu tanggal atau nama. Bantuan AI: [diisi oleh yang bersangkutan].
+
+**Jepri (Anggota 4).** Saya mengerjakan pencarian passage untuk sistem RAG dan program evaluasi kedua sistem. Pada pencarian dense, passage dan pertanyaan diubah menjadi vektor dengan `intfloat/multilingual-e5-small`, dibandingkan dengan cosine similarity, dan tiga teratas dikembalikan beserta skornya. Vektor passage disimpan di `data/cache/` agar tidak dihitung ulang. Pada 25 soal DEV, passage bukti masuk tiga besar pada 22 soal untuk pencarian dense dan 20 soal untuk TF-IDF. Selisih dua soal tersebut belum cukup untuk menyimpulkan bahwa salah satu metode lebih baik. Catatan lengkap, cara menjalankan, dan daftar pekerjaan yang tersisa tersedia pada [catatan bagian Anggota 4](docs/README_anggota4.md). Draf kode, tes, dan draf soal uji saya dibuat dengan bantuan AI, kemudian saya jalankan dan uji sendiri.
+
+**Ammar (Anggota 5).** Saya mengerjakan pembuatan jawaban dengan LLM berdasarkan tiga passage dari pencarian dense. Bantuan AI: [diisi oleh yang bersangkutan].
+
+## Soal uji dan laporan
+
+Setiap anggota membuat empat soal final dan memeriksa bukti milik anggota lain. Soal disimpan di `data/qa_test_parts/` dalam satu berkas CSV per anggota. Setelah seluruh berkas terkumpul, `python -m src.merge_questions` menggabungkannya menjadi `data/qa_test.csv` sambil memeriksa jumlah soal, soal ganda, dan kecocokan bukti dengan teks.
+
+Pada laporan, Farhan memegang Bab I–II. Mutiara dan Jepri menyusun Bab III beserta diagram kedua sistem. Seluruh anggota mengisi Bab IV untuk kodenya masing-masing. Jepri, Khansa, dan Ammar menyusun Bab V dari hasil yang benar-benar diperoleh. Mutiara mengoordinasikan abstrak, Bab VI, penggabungan `laporan/jawaban.docx` atau PDF, dan catatan kontribusi pada `laporan/tanggungjawab.docx`. Kontribusi dan pustaka yang dipakai dicatat sesuai arahan dosen.
 
 ## Kontrak yang dipakai bersama
 
-Alur PBA14 di `main.py` bisa diikuti dari kiri ke kanan.
+Alur PBA14 pada `main.py` dapat diikuti dari kiri ke kanan.
 
 - `run_classic(question)` → `analyze_question` → `retrieve_tfidf` → `extract_answer`.
 - `run_rag(question)` → `analyze_question` → `retrieve_dense` → `rag_answer`.
 
-Kedua retriever mengembalikan daftar terurut dengan `passage_id, text, score, source`. Kedua mode menghasilkan `question, answer, passage_id, evidence, source, status`, ditambah `passage` dan `note`. Untuk `answered` atau `needs_review`, kutipan harus ada di passage yang dipilih. Untuk `not_found`, jawaban dan rujukannya kosong. Saat evaluasi, Jepri hanya mengirim pertanyaan ke sistem. Jawaban acuan dan bukti berlabel dipakai sesudah prediksi. [Kontrak dan daftar tipe jawaban](src/contracts.py)
+Kedua retriever mengembalikan daftar terurut dengan `passage_id, text, score, source`. Kedua mode menghasilkan `question, answer, passage_id, evidence, source, status`, ditambah `passage` dan `note`. Untuk status `answered` atau `needs_review`, kutipan harus berada pada passage yang dipilih. Untuk `not_found`, jawaban dan rujukannya kosong. Saat evaluasi, hanya pertanyaan yang dikirim ke sistem. Jawaban acuan dan bukti berlabel dipakai setelah prediksi selesai. [Kontrak dan daftar tipe jawaban](src/contracts.py)
+
+## Cara bekerja sama
+
+Setiap anggota mengerjakan modulnya pada branch masing-masing, menjalankan tes, kemudian membuka pull request ke `main` untuk ditinjau anggota lain. Berkas milik anggota lain tidak diubah tanpa pemberitahuan terlebih dahulu. Folder lingkungan virtual, `data/cache/`, dan hasil uji coba lokal seperti `results/evaluation_dev.csv` tidak disertakan dalam commit.
+
+## Status terakhir (25 November 2026)
+
+- [x] Dataset, passage, kontrak, dan `main.py` (Mutiara)
+- [x] Analisis pertanyaan dan TF-IDF (Farhan), sudah digabung ke `main`
+- [ ] Pengambil jawaban klasik (Khansa), masih ditinjau dan diperbaiki
+- [x] Pencarian dense dan program evaluasi (Jepri), siap ditinjau
+- [ ] Generator RAG (Ammar), belum tersedia di repo
+- [ ] Soal uji final sebanyak 20 soal
+- [ ] Evaluasi akhir, penilaian bersama, dan laporan

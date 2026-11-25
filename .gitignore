@@ -7,3 +7,4 @@ __pycache__/
 .env
 data/processed/cek-pilot/
 data/processed/eksplorasi-ulang.json
+data/cache/

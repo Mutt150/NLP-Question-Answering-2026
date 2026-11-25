@@ -1,0 +1,26 @@
+﻿question_id,question,ground_truth,classic_answer,classic_passage_id,classic_correct,rag_answer,rag_passage_id,rag_correct,error_reason
+DEV001,Kapan Ki Hadjar Dewantara mendirikan Perguruan Nasional Taman Siswa di Yogyakarta?,3 Juli 1922,3 Juli 1922,DOC001_P04,True,,,,rag: UnavailableError: rag_answer (Orang 5) belum tersedia.
+DEV002,Sampai usia berapa Kartini diperbolehkan bersekolah di ELS?,12 tahun,12 tahun,DOC002_P02,True,,,,rag: UnavailableError: rag_answer (Orang 5) belum tersedia.
+DEV003,"Di mana Cut Nyak Dhien dilahirkan di wilayah VI Mukim, Aceh Besar?",Lampadang,Lampadang,DOC003_P04,True,,,,rag: UnavailableError: rag_answer (Orang 5) belum tersedia.
+DEV004,Organisasi apa yang dipimpin Mohammad Hatta pada 1926 ketika ia bersekolah di Belanda?,Perhimpunan Indonesia,Perhimpunan Indonesia,DOC004_P04,True,,,,rag: UnavailableError: rag_answer (Orang 5) belum tersedia.
+DEV005,Siapa yang bersama Soekarno memproklamasikan kemerdekaan Indonesia?,Mohammad Hatta,Mohammad Hatta,DOC005_P01,True,,,,rag: UnavailableError: rag_answer (Orang 5) belum tersedia.
+DEV006,Di kampung mana di Surabaya Bung Tomo dilahirkan?,Kampung Blauran,Kampung Blauran,DOC007_P02,True,,,,rag: UnavailableError: rag_answer (Orang 5) belum tersedia.
+DEV007,Kapan Dewi Sartika mendirikan Sakola Istri di Pendopo Kabupaten Bandung?,16 Januari 1904,16 Januari 1904,DOC009_P03,True,,,,rag: UnavailableError: rag_answer (Orang 5) belum tersedia.
+DEV008,Apa jabatan Agus Salim ketika ia mulai bekerja di Harian Neratja pada 1915?,Wakil Redaktur,Wakil Redaktur,DOC010_P04,True,,,,rag: UnavailableError: rag_answer (Orang 5) belum tersedia.
+DEV009,Partai apa yang didirikan Sutan Sjahrir pada 1948?,Partai Sosialis Indonesia,Partai Sosialis Indonesia,DOC011_P02,True,,,,rag: UnavailableError: rag_answer (Orang 5) belum tersedia.
+DEV010,Siapa ayah Martha Christina Tiahahu?,Kapitan Paulus Tiahahu,Kapitan Paulus Tiahahu,DOC015_P01,True,,,,rag: UnavailableError: rag_answer (Orang 5) belum tersedia.
+DEV011,Di mana Pangeran Diponegoro dilahirkan?,Yogyakarta,,,False,,,,classic: not_found; rag: UnavailableError: rag_answer (Orang 5) belum tersedia.
+DEV012,Di mana Pangeran Diponegoro membuat markas setelah menyingkir dari Tegalrejo?,Gua Selarong,Gua Selarong,DOC006_P05,True,,,,rag: UnavailableError: rag_answer (Orang 5) belum tersedia.
+DEV013,Kapan Thomas Matulessy ditetapkan sebagai Pahlawan Nasional?,6 November 1973,6 November 1973,DOC008_P01,True,,,,classic: needs_review; rag: UnavailableError: rag_answer (Orang 5) belum tersedia.
+DEV014,Pangkat apa yang dicapai Pattimura selama bertugas di kemiliteran Inggris?,Sersan Mayor,Sersan Mayor,DOC008_P04,True,,,,rag: UnavailableError: rag_answer (Orang 5) belum tersedia.
+DEV015,Sekolah apa yang dimasuki Tan Malaka pada tahun 1908?,Kweekschool,Kweekschool,DOC012_P03,True,,,,rag: UnavailableError: rag_answer (Orang 5) belum tersedia.
+DEV016,Siapa yang digantikan Tan Malaka sebagai ketua PKI?,Semaun,Semaun,DOC012_P05,True,,,,classic: needs_review; rag: UnavailableError: rag_answer (Orang 5) belum tersedia.
+DEV017,Siapa nama asli Tuanku Imam Bonjol?,Muhammad Shawab,Luhak Agam,DOC013_P01,False,,,,classic: needs_review; rag: UnavailableError: rag_answer (Orang 5) belum tersedia.
+DEV018,Siapa ayah Tuanku Imam Bonjol?,Khatib Bayanuddin,,,False,,,,classic: not_found; rag: UnavailableError: rag_answer (Orang 5) belum tersedia.
+DEV019,Perjanjian apa yang ditandatangani Sultan Hasanuddin pada 18 November 1667?,Perjanjian Bungaya,Perjanjian Bungaya,DOC014_P06,True,,,,rag: UnavailableError: rag_answer (Orang 5) belum tersedia.
+DEV020,Karena penyakit apa Sultan Hasanuddin meninggal?,penyakit ari-ari,penyakit ari-ari,DOC014_P06,True,,,,rag: UnavailableError: rag_answer (Orang 5) belum tersedia.
+DEV021,Di mana Cut Nyak Dhien diasingkan?,Sumedang,Sumedang,DOC003_P02,True,,,,rag: UnavailableError: rag_answer (Orang 5) belum tersedia.
+DEV022,Berapa jumlah anak perempuan Mohammad Hatta?,3,3 anak perempuan,DOC004_P02,True,,,,rag: UnavailableError: rag_answer (Orang 5) belum tersedia.
+DEV023,Siapa istri Mohammad Hatta?,Siti Rahmiati,Dewi Sartika,DOC009_P03,False,,,,classic: needs_review; rag: UnavailableError: rag_answer (Orang 5) belum tersedia.
+DEV024,Kapan buku kumpulan surat Kartini diterbitkan?,1911,1911,DOC002_P05,True,,,,rag: UnavailableError: rag_answer (Orang 5) belum tersedia.
+DEV025,Di mana Agus Salim dimakamkan?,Taman Makam Pahlawan Kalibata,,,False,,,,classic: not_found; rag: UnavailableError: rag_answer (Orang 5) belum tersedia.
