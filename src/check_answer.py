@@ -299,20 +299,39 @@ def get_ner_pipeline() -> Any:
 
     _NER_LOAD_ATTEMPTED = True
     try:
+        os.environ.setdefault("HF_HUB_DISABLE_PROGRESS_BARS", "1")
+        os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")
+
         from transformers import (
             AutoModelForTokenClassification,
             AutoTokenizer,
             pipeline,
         )
+        from transformers.utils import logging as hf_logging
 
-        tokenizer = AutoTokenizer.from_pretrained(DEFAULT_NER_MODEL)
-        model = AutoModelForTokenClassification.from_pretrained(DEFAULT_NER_MODEL)
+        hf_logging.set_verbosity_error()
+        hf_logging.disable_progress_bar()
+        logging.getLogger("huggingface_hub").setLevel(logging.ERROR)
+
+        # Prioritaskan cache lokal agar berjalan offline & bebas peringatan HF Hub;
+        # jika belum tersedia di laptop, unduh otomatis dari Hub.
+        try:
+            tokenizer = AutoTokenizer.from_pretrained(
+                DEFAULT_NER_MODEL, local_files_only=True
+            )
+            model = AutoModelForTokenClassification.from_pretrained(
+                DEFAULT_NER_MODEL, local_files_only=True
+            )
+        except Exception:
+            tokenizer = AutoTokenizer.from_pretrained(DEFAULT_NER_MODEL)
+            model = AutoModelForTokenClassification.from_pretrained(DEFAULT_NER_MODEL)
+
         _NER_PIPELINE = pipeline(
             "token-classification",
             model=model,
             tokenizer=tokenizer,
             aggregation_strategy="simple",
-            device=-1,  # CPU lokal agar stabil di laptop tanpa GPU
+            device=-1,
         )
     except (
         Exception
